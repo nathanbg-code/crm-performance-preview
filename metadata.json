@@ -1,0 +1,7 @@
+{
+  "name": "AI Omnichannel CRM",
+  "description": "Modern WhatsApp and Instagram CRM that configures itself with AI, featuring visual automation builder, omnichannel inbox, and Kanban pipeline.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
