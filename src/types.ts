@@ -74,6 +74,12 @@ export interface Lead {
     content?: string;
   };
   createdAt: string;
+  internalNotes?: Array<{
+    id: string;
+    text: string;
+    authorName: string;
+    timestamp: string;
+  }>;
 }
 
 export interface FunnelAutomationRule {

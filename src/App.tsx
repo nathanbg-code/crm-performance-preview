@@ -82,6 +82,14 @@ export default function App() {
     }
   };
 
+  // Full Lead Update (Tags, Custom Fields, Value, Temperature, etc.)
+  const handleUpdateLead = (updatedLead: Lead) => {
+    setLeads((prev) => prev.map((l) => (l.id === updatedLead.id ? updatedLead : l)));
+    if (selectedLead && selectedLead.id === updatedLead.id) {
+      setSelectedLead(updatedLead);
+    }
+  };
+
   // Open Inbox directly on a specific lead's chat
   const handleOpenInbox = (leadId: string) => {
     const conv = conversations.find((c) => c.leadId === leadId);
