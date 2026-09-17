@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   INITIAL_SELLERS,
   INITIAL_PIPELINE,
+  INITIAL_PIPELINES,
   INITIAL_LEADS,
   INITIAL_CONVERSATIONS,
   INITIAL_AUTOMATIONS,
@@ -29,6 +30,7 @@ import { IntegrationsView } from './components/integrations/IntegrationsView';
 import { AIOnboardingModal } from './components/onboarding/AIOnboardingModal';
 import { QuickCreateModal } from './components/common/QuickCreateModal';
 import { CommandPalette } from './components/common/CommandPalette';
+import { FunnelBuilderModal } from './components/funnel/FunnelBuilderModal';
 import { CheckCircle2, Sparkles, X } from 'lucide-react';
 
 export default function App() {
@@ -38,7 +40,12 @@ export default function App() {
 
   // Core CRM Domain States
   const [sellers, setSellers] = useState<Seller[]>(INITIAL_SELLERS);
-  const [pipeline, setPipeline] = useState<Pipeline>(INITIAL_PIPELINE);
+  const [pipelines, setPipelines] = useState<Pipeline[]>(INITIAL_PIPELINES);
+  const [activePipelineId, setActivePipelineId] = useState<string>(INITIAL_PIPELINES[0].id);
+
+  // Active Pipeline resolved from pipelines list
+  const pipeline = pipelines.find((p) => p.id === activePipelineId) || pipelines[0];
+
   const [leads, setLeads] = useState<Lead[]>(INITIAL_LEADS);
   const [conversations, setConversations] = useState<Conversation[]>(INITIAL_CONVERSATIONS);
   const [automations, setAutomations] = useState<AutomationFlow[]>(INITIAL_AUTOMATIONS);
@@ -52,6 +59,7 @@ export default function App() {
   const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
   const [quickCreateStageId, setQuickCreateStageId] = useState<string | undefined>(undefined);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isFunnelBuilderOpen, setIsFunnelBuilderOpen] = useState(false);
 
   // Success Feedback Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -136,7 +144,8 @@ export default function App() {
       name: `Funil Inteligente: ${proposal.segment}`,
       stages: newStages,
     };
-    setPipeline(newPipeline);
+    setPipelines((prev) => [newPipeline, ...prev]);
+    setActivePipelineId(newPipeline.id);
 
     // 2. Re-assign leads to appropriate new stage
     setLeads((prev) =>
@@ -210,6 +219,33 @@ export default function App() {
     showToast(`Lead "${newLead.name}" criado com sucesso na etapa correspondente.`);
   };
 
+  // Funnel Pipeline Management Handlers
+  const handleUpdatePipeline = (updatedPipeline: Pipeline) => {
+    setPipelines((prev) =>
+      prev.map((p) => (p.id === updatedPipeline.id ? updatedPipeline : p))
+    );
+    showToast(`Funil "${updatedPipeline.name}" atualizado.`);
+  };
+
+  const handleCreatePipeline = (newPipeline: Pipeline) => {
+    setPipelines((prev) => [...prev, newPipeline]);
+    setActivePipelineId(newPipeline.id);
+    showToast(`Funil "${newPipeline.name}" criado com sucesso!`);
+  };
+
+  const handleDeletePipeline = (pipelineId: string) => {
+    if (pipelines.length <= 1) {
+      showToast('O sistema precisa de pelo menos 1 funil cadastrado.');
+      return;
+    }
+    const remaining = pipelines.filter((p) => p.id !== pipelineId);
+    setPipelines(remaining);
+    if (activePipelineId === pipelineId) {
+      setActivePipelineId(remaining[0].id);
+    }
+    showToast('Funil removido com sucesso.');
+  };
+
   // Counters
   const unreadInboxCount = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
   const slaAlertCount = leads.filter((l) => l.slaMinutesRemaining <= 0).length;
@@ -232,6 +268,9 @@ export default function App() {
         {/* Top Navbar */}
         <Navbar
           currentPipeline={pipeline}
+          pipelines={pipelines}
+          onSelectPipeline={setActivePipelineId}
+          onOpenFunnelBuilder={() => setIsFunnelBuilderOpen(true)}
           onOpenAIOnboarding={() => setIsAIOnboardingOpen(true)}
           onOpenQuickCreate={() => {
             setQuickCreateStageId(undefined);
@@ -246,6 +285,8 @@ export default function App() {
           {activeTab === 'crm' && (
             <PipelineKanban
               pipeline={pipeline}
+              pipelines={pipelines}
+              onSelectPipeline={setActivePipelineId}
               leads={leads}
               sellers={sellers}
               onLeadClick={(lead) => setSelectedLead(lead)}
@@ -256,6 +297,7 @@ export default function App() {
                 setIsQuickCreateOpen(true);
               }}
               onOpenAIOnboarding={() => setIsAIOnboardingOpen(true)}
+              onOpenFunnelBuilder={() => setIsFunnelBuilderOpen(true)}
             />
           )}
 
@@ -309,6 +351,8 @@ export default function App() {
                 setCurrentFlowId(newFlow.id);
                 showToast(`Automação "${newFlow.name}" gerada no canvas!`);
               }}
+              pipeline={pipeline}
+              onOpenFunnelBuilder={() => setIsFunnelBuilderOpen(true)}
             />
           )}
 
@@ -378,6 +422,20 @@ export default function App() {
         onOpenQuickCreate={() => setIsQuickCreateOpen(true)}
         leads={leads}
         onSelectLead={(lead) => setSelectedLead(lead)}
+      />
+
+      {/* Funnel Builder & Stage Automations Modal */}
+      <FunnelBuilderModal
+        isOpen={isFunnelBuilderOpen}
+        onClose={() => setIsFunnelBuilderOpen(false)}
+        pipelines={pipelines}
+        activePipelineId={activePipelineId}
+        onSelectPipeline={setActivePipelineId}
+        onUpdatePipeline={handleUpdatePipeline}
+        onCreatePipeline={handleCreatePipeline}
+        onDeletePipeline={handleDeletePipeline}
+        sellers={sellers}
+        onShowToast={showToast}
       />
 
       {/* Notification Toast */}

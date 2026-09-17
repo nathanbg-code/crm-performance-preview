@@ -76,17 +76,45 @@ export interface Lead {
   createdAt: string;
 }
 
+export interface FunnelAutomationRule {
+  id: string;
+  name: string;
+  stageId: string;
+  triggerType: 'stage_entered' | 'time_in_stage_sla' | 'temperature_hot' | 'form_submitted' | 'whatsapp_received';
+  triggerLabel: string;
+  actionType: 'send_whatsapp' | 'assign_seller_round_robin' | 'trigger_ai_sdr' | 'send_slack_alert' | 'update_tag' | 'call_webhook';
+  actionLabel: string;
+  actionConfig: {
+    templateText?: string;
+    targetSellerId?: string;
+    agentRole?: string;
+    delayMinutes?: number;
+    webhookUrl?: string;
+    tagName?: string;
+  };
+  active: boolean;
+  executedCount: number;
+  lastExecuted?: string;
+}
+
 export interface PipelineStage {
   id: string;
   title: string;
   color: string;
   order: number;
+  slaMinutes?: number;
+  description?: string;
+  mandatoryRequirements?: string[];
+  automations?: FunnelAutomationRule[];
 }
 
 export interface Pipeline {
   id: string;
   name: string;
+  description?: string;
+  category?: string;
   stages: PipelineStage[];
+  isDefault?: boolean;
 }
 
 export interface Message {
