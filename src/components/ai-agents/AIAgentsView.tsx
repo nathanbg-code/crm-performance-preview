@@ -20,9 +20,14 @@ import {
 interface AIAgentsViewProps {
   agents: AIAgent[];
   onUpdateAgent: (agent: AIAgent) => void;
+  onNavigateToConnections?: () => void;
 }
 
-export const AIAgentsView: React.FC<AIAgentsViewProps> = ({ agents, onUpdateAgent }) => {
+export const AIAgentsView: React.FC<AIAgentsViewProps> = ({
+  agents,
+  onUpdateAgent,
+  onNavigateToConnections,
+}) => {
   const [selectedAgentId, setSelectedAgentId] = useState<string>(agents[0]?.id || '');
   const activeAgent = agents.find((a) => a.id === selectedAgentId) || agents[0];
 
@@ -76,16 +81,28 @@ export const AIAgentsView: React.FC<AIAgentsViewProps> = ({ agents, onUpdateAgen
       {/* Left / Middle: Agent List & Deep Configuration (7 cols) */}
       <div className="flex-1 flex flex-col h-full overflow-y-auto border-r border-zinc-800 p-5 space-y-6">
         {/* Header */}
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-base font-semibold text-zinc-100">Agentes de Inteligência Artificial</h2>
-            <span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">
-              3 AGENTES ATIVOS
-            </span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-base font-semibold text-zinc-100">Agentes de Inteligência Artificial</h2>
+              <span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">
+                3 AGENTES ATIVOS
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400">
+              Configure o comportamento, tom de voz, regras de qualificação e condições de transbordo para humanos.
+            </p>
           </div>
-          <p className="text-xs text-zinc-400">
-            Configure o comportamento, tom de voz, regras de qualificação e condições de transbordo para humanos.
-          </p>
+
+          {onNavigateToConnections && (
+            <button
+              onClick={onNavigateToConnections}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-v4-primary/15 hover:bg-v4-primary/25 border border-v4-primary/30 text-v4-primary text-xs font-semibold transition cursor-pointer shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Conexões de IA & APIs</span>
+            </button>
+          )}
         </div>
 
         {/* Agent Select Cards */}

@@ -22,6 +22,7 @@ export type ActiveTab =
   | 'contacts'
   | 'automations'
   | 'ai_agents'
+  | 'ai_connections'
   | 'reports'
   | 'integrations'
   | 'settings';
@@ -85,6 +86,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'ai_agents',
       label: 'Agentes de IA',
       icon: <Bot className="w-4 h-4 shrink-0" />,
+    },
+    {
+      id: 'ai_connections',
+      label: 'Conexões de IA & APIs',
+      icon: <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />,
+      badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold',
     },
     {
       id: 'reports',

@@ -233,3 +233,49 @@ export interface CRMConfigProposal {
   qualificationRules: string[];
   allocatedAgent: string;
 }
+
+export type AIProviderId = 'gemini' | 'openai' | 'anthropic' | 'groq' | 'deepseek' | 'custom';
+
+export interface AIModelOption {
+  id: string;
+  name: string;
+  recommended?: boolean;
+  contextWindow?: string;
+  pricingEstimate?: string;
+}
+
+export interface AIProviderConfig {
+  id: AIProviderId;
+  name: string;
+  brand: string;
+  status: 'connected' | 'ready' | 'error' | 'testing';
+  isDefault: boolean;
+  isFallback: boolean;
+  apiKeyMasked?: string;
+  apiKey?: string;
+  customEndpoint?: string;
+  selectedModel: string;
+  supportedModels: AIModelOption[];
+  latencyMs?: number;
+  rateLimitRPM: number;
+  temperature: number;
+  maxTokens: number;
+  description: string;
+  totalTokensUsed: number;
+  lastTestedAt?: string;
+}
+
+export interface AIRoutingSettings {
+  sdrAgentProvider: AIProviderId;
+  sdrAgentModel: string;
+  inboxCopilotProvider: AIProviderId;
+  inboxCopilotModel: string;
+  automationInterpreterProvider: AIProviderId;
+  automationInterpreterModel: string;
+  sentimentAnalysisProvider: AIProviderId;
+  sentimentAnalysisModel: string;
+  fallbackEnabled: boolean;
+  fallbackProvider: AIProviderId;
+  maxTimeoutMs: number;
+}
+

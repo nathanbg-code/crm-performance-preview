@@ -27,6 +27,7 @@ import { AIAgentsView } from './components/ai-agents/AIAgentsView';
 import { OperationalDashboard } from './components/dashboard/OperationalDashboard';
 import { ContactsView } from './components/contacts/ContactsView';
 import { IntegrationsView } from './components/integrations/IntegrationsView';
+import { AIConnectionsView } from './components/ai-connections/AIConnectionsView';
 import { AIOnboardingModal } from './components/onboarding/AIOnboardingModal';
 import { QuickCreateModal } from './components/common/QuickCreateModal';
 import { CommandPalette } from './components/common/CommandPalette';
@@ -364,10 +365,17 @@ export default function App() {
                   prev.map((a) => (a.id === updated.id ? updated : a))
                 )
               }
+              onNavigateToConnections={() => setActiveTab('ai_connections')}
             />
           )}
 
-          {activeTab === 'integrations' && <IntegrationsView />}
+          {activeTab === 'ai_connections' && <AIConnectionsView />}
+
+          {activeTab === 'integrations' && (
+            <IntegrationsView
+              onNavigateToAIConnections={() => setActiveTab('ai_connections')}
+            />
+          )}
 
           {(activeTab === 'reports' || activeTab === 'settings') && (
             <OperationalDashboard

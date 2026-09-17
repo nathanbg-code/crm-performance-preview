@@ -33,7 +33,7 @@ interface IntegrationItem {
   id: string;
   name: string;
   provider: string;
-  category: 'messaging' | 'ads' | 'crm' | 'webhooks';
+  category: 'messaging' | 'ads' | 'crm' | 'webhooks' | 'ai_providers';
   categoryLabel: string;
   status: 'connected' | 'syncing' | 'paused';
   latency: string;
@@ -46,7 +46,11 @@ interface IntegrationItem {
   tokenMasked?: string;
 }
 
-export const IntegrationsView: React.FC = () => {
+interface IntegrationsViewProps {
+  onNavigateToAIConnections?: () => void;
+}
+
+export const IntegrationsView: React.FC<IntegrationsViewProps> = ({ onNavigateToAIConnections }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [testingId, setTestingId] = useState<string | null>(null);
@@ -56,6 +60,46 @@ export const IntegrationsView: React.FC = () => {
   const [copiedUrl, setCopiedUrl] = useState(false);
 
   const [integrations, setIntegrations] = useState<IntegrationItem[]>([
+    {
+      id: 'gemini_ai',
+      name: 'Google Gemini (GenAI SDK)',
+      provider: 'Google AI Studio / Vertex AI',
+      category: 'ai_providers',
+      categoryLabel: 'Inteligência Artificial',
+      status: 'connected',
+      latency: '98ms',
+      eventsToday: '142.850 tokens',
+      account: 'Projeto Oficial CRM (gemini-3.8-flash)',
+      iconComponent: (
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+          GE
+        </div>
+      ),
+      tag: 'Provedor Nativo',
+      description: 'Motor de IA de alta performance para atendimento imediato no WhatsApp, análise de intenção e copiloto.',
+      webhookUrl: 'https://api.v4autocrm.com/api/ai/suggest-reply',
+      tokenMasked: 'AIzaSy...491a0B',
+    },
+    {
+      id: 'openai_ai',
+      name: 'OpenAI API Gateway',
+      provider: 'OpenAI Inc.',
+      category: 'ai_providers',
+      categoryLabel: 'Inteligência Artificial',
+      status: 'connected',
+      latency: '182ms',
+      eventsToday: '38.200 tokens',
+      account: 'Conta V4 Pro (gpt-4o-mini)',
+      iconComponent: (
+        <div className="w-9 h-9 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shadow-xs">
+          OA
+        </div>
+      ),
+      tag: 'Fallback & Copilot',
+      description: 'Conector com modelos GPT-4o e GPT-4o Mini para geração textual e contingência automática.',
+      webhookUrl: 'https://api.v4autocrm.com/api/ai/test-connection',
+      tokenMasked: 'sk-proj-...882x1a',
+    },
     {
       id: 'wpp',
       name: 'WhatsApp Cloud API',
@@ -243,6 +287,16 @@ export const IntegrationsView: React.FC = () => {
 
         {/* Global Action */}
         <div className="flex items-center gap-2.5 shrink-0">
+          {onNavigateToAIConnections && (
+            <button
+              onClick={onNavigateToAIConnections}
+              className="h-8.5 px-3.5 rounded-lg bg-v4-primary/15 hover:bg-v4-primary/25 border border-v4-primary/30 text-v4-primary text-xs font-semibold transition cursor-pointer flex items-center gap-1.5"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>Conexões de IA & Modelos</span>
+            </button>
+          )}
+
           <button
             onClick={() => setIsConnectModalOpen(true)}
             className="h-8.5 px-3.5 rounded-lg bg-v4-primary hover:bg-v4-primary-hover text-white text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shadow-xs"
@@ -302,6 +356,7 @@ export const IntegrationsView: React.FC = () => {
         <div className="flex items-center gap-1.5 p-1 bg-v4-surface/80 rounded-lg border border-v4-border/30 text-xs w-full sm:w-auto overflow-x-auto">
           {[
             { id: 'all', label: 'Todos os Conectores' },
+            { id: 'ai_providers', label: 'Provedores de IA & Modelos' },
             { id: 'messaging', label: 'Mensageria & Chat' },
             { id: 'ads', label: 'Tráfego Pago & Ads' },
             { id: 'crm', label: 'Automação & CRMs' },
